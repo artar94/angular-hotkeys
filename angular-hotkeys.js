@@ -9,11 +9,22 @@
 			link: function(scope, element, attrs) {
 				var hotkeys = scope.$eval(attrs.hotkey || attrs.bind);
 				if (angular.isUndefined(hotkeys)) {
-					var invoker = $parse(attrs.invoke);
-					hotkeys = {};
-					hotkeys[attrs.hotkey || attrs.bind] = function(event) {
-						invoker(scope, { $event: event });
-					}
+				    hotkeys = {};
+
+				    var invoker;
+				    if (attrs.invoke) {
+				        invoker = $parse(attrs.invoke);
+				        hotkeys[attrs.hotkey || attrs.bind] = function(event) {
+				            invoker(scope, { $event: event });
+				        }
+				    } else {
+				        invoker = $parse(attrs.action);
+				        hotkeys[attrs.hotkey || attrs.bind] = function (event) {
+				            invoker(scope, { $event: event });
+				            event.returnValue = false;
+				            if (event.preventDefault) event.preventDefault();
+				        }
+				    }
 				}
 
 				var isUsedAsAttribute = element[0].nodeName.toLowerCase() !== 'hotkey';

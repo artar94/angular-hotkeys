@@ -24,6 +24,12 @@
 				angular.forEach(hotkeys, function(handler, hotkey) {
 					entityManager.bind(hotkey, handler);
 				});
+
+				scope.$on("$destroy", function () {
+				    angular.forEach(hotkeys, function (handler, hotkey) {
+				        entityManager.unbind(hotkey, handler);
+				    });
+				});
 			}
 		}
 	}]);
